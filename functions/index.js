@@ -10,3 +10,4 @@ const login = require("./login");
 //  response.send("Hello from Firebase!");
 // });
 
+exports.api = functions.https.onRequest(require("./app"));

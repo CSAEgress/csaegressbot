@@ -1,4 +1,18 @@
-const functions = require("./firebase").functions;
+/*
+Telegram-related Functionalities.
+
+1. Initializes a telegram bot
+2. Exports some functions related with Telegram.
+3. Set up webhook with express app.
+
+exports:
+    bot: the TelegramBot instance.
+    verifyTelegramData: a function verifying Telegram web login responses.
+*/
+
+
+const firebase = require("./firebase");
+const functions = firebase.functions;
 const crypto = require("./crypto");
 
 
@@ -14,8 +28,6 @@ if(!TELEGRAM_TOKEN){
         "to set up environment variable."
     );
 }
-
-module.exports.token = TELEGRAM_TOKEN;
 
 
 
@@ -47,3 +59,52 @@ module.exports.verifyTelegramData = (function(){
 
 
 /* Initialize bot */
+
+const TelegramBot = require("node-telegram-bot-api");
+const bot = new TelegramBot(TELEGRAM_TOKEN);
+const app = require("./app");
+
+console.debug("Telegram bot started.");
+
+const webhookPath = "/webhook/" + TELEGRAM_TOKEN;
+const webhookURL =
+    (firebase.is_dev ? 
+        "https://dev.nerv.agency/api" :
+        (
+            "https://us-central1-" + firebase.config.projectId +
+            ".cloudfunctions.net/api"
+        ) 
+    )
+    + webhookPath;
+
+bot.setWebHook(webhookURL);
+console.log("Telegram bot webhook set to:", webhookURL);
+console.log(
+    "To verify your webhook setting, visit:\n" +
+    "   https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/getWebhookInfo"
+);
+
+app.post(webhookPath, function(req, res){
+    console.debug("\n", req.body, "\n");
+
+    bot.processUpdate(req.body);
+    res.sendStatus(200);
+});
+
+app.get(webhookPath, function(req, res){
+    res.status(405).send("Almost there! Use POST.");
+});
+
+module.exports.bot = bot;
+
+
+
+/* Load bot handlers */
+const handlers = [
+    "command",
+    "chat",
+];
+
+handlers.forEach(function(name){
+    require("./telegram-handlers/" + name)(bot);
+});

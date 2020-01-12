@@ -3,6 +3,7 @@
     ".write": false,
 
     "users": { ".read": false },
+    "settings": { ".read": false },
 
     "$postid": {
       ".validate": "$postid.length == 32",
