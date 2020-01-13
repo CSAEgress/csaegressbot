@@ -101,10 +101,14 @@ module.exports.bot = bot;
 
 /* Load bot handlers */
 const handlers = [
-    "command",
-    "chat",
+    "private-chat",
+    "group-chat",
+    "inline-query",
 ];
 
 handlers.forEach(function(name){
     require("./telegram-handlers/" + name)(bot);
 });
+
+
+module.exports.bot.stickers = require("./telegram.stickers");

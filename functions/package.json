@@ -14,7 +14,10 @@
   "dependencies": {
     "firebase-admin": "^8.6.0",
     "firebase-functions": "^3.3.0",
-    "node-telegram-bot-api": "^0.40.0"
+    "lodash": "^4.17.15",
+    "node-telegram-bot-api": "^0.40.0",
+    "uuid": "^3.3.3",
+    "yaml": "^1.7.2"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.1.6"

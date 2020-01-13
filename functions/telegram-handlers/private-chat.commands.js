@@ -1,6 +1,4 @@
 /*
-Dispatcher for all commands.
-
 
 Commands handler are located in sub-directory ./command-handlers. Each handler
 there exports a function taking a single variable as input. That function
@@ -15,33 +13,34 @@ The variable passed to command handler function has following attributes:
 */
 
 
-
 const commands = [ // All commands to be loaded are here
     "start",
+    "event",
 ];
-
-
-
 
 const eventEmitter = new (require("events").EventEmitter)();
 
-function commandHandler(bot, message, regexpResult){
+function commandHandler(bot, msg, regexpResult){
+
     const command = regexpResult[1];
     const data = regexpResult[2];
     eventEmitter.emit(command, {
         bot: bot, 
-        data: data,
-        message: message
+        data: data ? data.trim() : undefined,
+        message: msg,
     });
 }
 
-module.exports = function(bot){
-    bot.onText(/^\/([a-zA-Z]+)(\s.+)?$/, function(message, regexpResult){
-        commandHandler(bot, message, regexpResult);
-    });
-};
-
 commands.forEach(function(commandName){
     const handler = require("./command-handlers/" + commandName);
-    eventEmitter.on(handler.COMMAND, handler);
+    if(handler.COMMAND){
+        eventEmitter.on(handler.COMMAND, handler);
+    }
+    if(handler.COMMANDS){
+        handler.COMMANDS.forEach(function(command){
+            eventEmitter.on(command, handler);
+        });
+    }
 });
+
+module.exports = commandHandler; 
