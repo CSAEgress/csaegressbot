@@ -13,6 +13,7 @@ exports:
 
 const hooks = [
     "csaegress-acl-enforcing-and-updating",
+    "command-start",
     "events",
 ];
 
@@ -106,6 +107,9 @@ app.get(webhookPath, function(req, res){
 module.exports.bot = bot;
 
 
+/* Add additonal message handlers to bot. */
+require("./telegram.message-handlers")(bot);
+
 
 /* Load bot handlers */
 
@@ -114,8 +118,6 @@ hooks.forEach(function(name){
 });
 
 
-/* Add additonal message handlers to bot. */
-require("./telegram.message-handlers")(bot);
 
 
 
