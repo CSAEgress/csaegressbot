@@ -4,11 +4,19 @@ Telegram-related Functionalities.
 1. Initializes a telegram bot
 2. Exports some functions related with Telegram.
 3. Set up webhook with express app.
+4. Load hooks of functionalities defined for our bot.
 
 exports:
     bot: the TelegramBot instance.
     verifyTelegramData: a function verifying Telegram web login responses.
 */
+
+const hooks = [
+    "csaegress-acl-enforcing-and-updating",
+    "events",
+];
+
+
 
 
 const firebase = require("./firebase");
@@ -100,15 +108,20 @@ module.exports.bot = bot;
 
 
 /* Load bot handlers */
-const handlers = [
-    "private-chat",
-    "group-chat",
-    "inline-query",
-];
 
-handlers.forEach(function(name){
-    require("./telegram-handlers/" + name)(bot);
+hooks.forEach(function(name){
+    require("./telegram-hooks/" + name + "/index")(bot);
 });
 
 
+/* Add additonal message handlers to bot. */
+require("./telegram.message-handlers")(bot);
+
+
+
+/* Load stickers to `bot` object. */
 module.exports.bot.stickers = require("./telegram.stickers");
+
+
+/* Message tester */
+module.exports.test = require("./telegram.test");

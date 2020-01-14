@@ -6,12 +6,12 @@
     "settings": { ".read": false },
 
     "$postid": {
-      ".validate": "$postid.length == 32",
-      ".read": "data.child('is_private').val() != true",
+      ".validate": "$postid.length == 36",
+      ".read": "data.child('is_public').val() === true",
       
-      "is_private": { ".validate": "newData.isBoolean()" },
+      "public": { ".validate": "newData.isBoolean()" },
       "owner": { ".validate": "newData.isString() && newData.val().length <= 20 && newData.val().length > 3" },
-      "title": { ".validate": "newData.isString() && newData.val().length <= 60" },
+      "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
       "description": {".validate": "newData.isString() && newData.val().length <= 500"},
       
       "$_": {".validate": false}

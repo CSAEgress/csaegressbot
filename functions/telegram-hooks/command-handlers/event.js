@@ -158,27 +158,66 @@ module.exports = async function(e){
             await bot.sendMessage(msg.chat.id, "创建活动失败！" + e.message);
             return;
         }
-
-
-        bot.sendMessage(
-            msg.chat.id,
-            [
-                "新活动已经保存。 **活动名称:**\n",
-                eventData.name,
-                "\n请用下面的命令查看:\n",
-                "```",
-                "/event " + updatedEventId,
-                "```\n",
-                "要为活动增加背景图或者地点，请在下面用相应图片、坐标或场所" +
-                "(可借助 @foursquare 这样的机器人检索)回复上面任意包含这一活动" +
-                "编号的消息。",
-            ].join("\n"),
-            { parse_mode: "markdown" }
-        );
-        return;
+    } else if(eventData){
+        // update an event
+        eventData.id = eventId;
+        try{
+            updatedEventId = await csaegress.events.updateEvent(
+                msg.from.id,
+                eventData
+            );
+        } catch(e){
+            await bot.sendMessage(msg.chat.id, "修改活动失败！" + e.message);
+            return;
+        }
+    } else {
+        // display an event
+        eventData = await csaegress.events.queryEvent(eventId);
+        if(!eventData){
+            await bot.sendMessage(msg.chat.id, "这个活动不存在！");
+            return;
+        }
+        if(!eventData.public && !isMember){
+            await bot.sendMessage(
+                msg.chat.id,
+                "这个活动是菜格瑞斯群的私密活动，请不要偷看w"
+            );
+            return;
+        }
+        updatedEventId = eventId;
     }
+
+
+    var updatedEventDisplay = await bot.sendMessage(
+        msg.chat.id,
+        [
+            "**活动名称:**\n",
+            eventData.name,
+            "\n要修改活动名称、简介等信息，请复制下面的内容修改后回复我:\n",
+            "```",
+            "/event " + updatedEventId,
+            "name: " + eventData.name,
+            "public: " + eventData.public,
+            "---",
+            eventData.description,
+            "```\n",
+            "要为活动增加背景图或者地点，请在下面用相应图片、坐标或场所" +
+            "(可借助 @foursquare 这样的机器人检索)回复上面任意包含这一活动" +
+            "编号的消息。",
+        ].join("\n"),
+        {
+            parse_mode: "markdown",
+            reply_markup: { inline_keyboard: [
+                [ // row 1
+                    {
+                        text: "分享本活动到群聊...",
+                        switch_inline_query: updatedEventId,
+                    }
+                ],
+            ] },
+        }
+    );
     
-    // /event <event-id>, either with or without data
 
 }
 module.exports.COMMAND = "event";
