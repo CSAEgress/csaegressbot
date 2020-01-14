@@ -35,7 +35,7 @@ module.exports = function modifier(bot){
 
     bot.on("message", function(msg){ 
         if(!msg.reply_to_message) return;
-        onReplyHandlers.default.forEach(function(callback){
+        onReplyHandlers.forEach(function(callback){
             callback(msg, msg.reply_to_message);
         });
     });

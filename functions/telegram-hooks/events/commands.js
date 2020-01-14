@@ -74,11 +74,11 @@ function parseUserEventInput(data){
 Command handler
 
 */
-module.exports = async function(e){
-    const bot = e.bot; const msg = e.message; const data = e.data;
 
+const bot = require("../../telegram").bot;
+
+module.exports = async function(msg, data){
     const isMember = await acl.isMember(msg.from);
-
 
     var eventId = null, eventData = null;
     if(data){
@@ -220,4 +220,3 @@ module.exports = async function(e){
     
 
 }
-module.exports.COMMAND = "event";

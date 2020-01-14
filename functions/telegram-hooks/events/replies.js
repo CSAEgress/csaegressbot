@@ -5,8 +5,9 @@
 
 const csaegress = require("../../csaegress");
 const finder = /\/event\s([0-9a-z\-]{36})/;
+const bot = require("../../telegram").bot;
 
-module.exports = async function(bot, msg, msgReplied){
+module.exports = async function(msg, msgReplied){
     // Filter out when you really need to invoke this handler.
     // Only when `msg` is a picture or a location(may contain venue).
 
